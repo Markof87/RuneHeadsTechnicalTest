@@ -87,3 +87,6 @@ https://markof87.itch.io/runeheadstechnicaltest
 | **W A S D** / **Frecce Direzionali** | Movimento del Player |
 | **ESC** | Pausa / Ripristino Gioco |
 | **Mouse Left Click** | Interazione con Bottoni UI |
+
+---
+## 📝 Postmortem & Key Learnings
