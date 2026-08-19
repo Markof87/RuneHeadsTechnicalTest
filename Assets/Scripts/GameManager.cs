@@ -1,21 +1,23 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(PlayerController))]
 [RequireComponent(typeof(Gem))]
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance { get; private set; }
     public static event Action OnGameStart;
     public static event Action OnGameEnd;
     public static event Action<float> OnTimerUpdated;
     public static event Action<int> OnScoreUpdated;
 
     [SerializeField]
-    private PlayerController player;
+    private PlayerController player, instantiatedPlayer;
 
     [SerializeField]
-    private Gem gem;
+    private Gem gem, instantiatedGem;
 
     [SerializeField]
     private ScoreData scoreData;
@@ -26,21 +28,67 @@ public class GameManager : MonoBehaviour
     public float TimeRemaining { get; private set; }
     public bool IsGameActive { get; private set; }
 
-    private int score = 0;
+    private Coroutine timerCoroutine, startGameCoroutine;
 
-    private void Start()
+    private void Awake()
     {
-        StartGame();
+        if(Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    public void NewGame()
+    {
+        SceneManager.LoadScene(1);
+    }
+
+    public void LoadResults()
+    {
+        SceneManager.LoadScene(2);
+    }
+
+    public void BackMenu()
+    {
+        SceneManager.LoadScene(0);
     }
 
     private void OnEnable()
     {
+        SceneManager.sceneLoaded += OnSceneLoaded;
         Gem.OnGemCollected += HandleGemCollected;
     }
 
     private void OnDisable()
     {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
         Gem.OnGemCollected -= HandleGemCollected;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Time.timeScale = 1f;
+
+        if(timerCoroutine  != null)
+        {
+            StopCoroutine(timerCoroutine);
+            timerCoroutine = null;
+        }
+
+        if (startGameCoroutine != null)
+        {
+            StopCoroutine(startGameCoroutine);
+            startGameCoroutine = null;
+        }
+
+        if (scene.name == "Game")
+            startGameCoroutine = StartCoroutine(StartGame());
+        else
+            IsGameActive = false;
     }
 
     private void HandleGemCollected()
@@ -61,10 +109,12 @@ public class GameManager : MonoBehaviour
         EndGame();
     }
 
-    private void StartGame()
+    private IEnumerator StartGame()
     {
-        Instantiate(player, new Vector2(0, 0), Quaternion.identity);
-        Instantiate(gem, new Vector2(10, 0), Quaternion.identity);
+        yield return new WaitForEndOfFrame();
+
+        instantiatedPlayer = Instantiate(player, new Vector2(0, 0), Quaternion.identity);
+        instantiatedGem = Instantiate(gem, new Vector2(10, 0), Quaternion.identity);
 
         OnGameStart?.Invoke();
 
@@ -72,11 +122,14 @@ public class GameManager : MonoBehaviour
 
         TimeRemaining = timer;
         IsGameActive = true;
-        StartCoroutine(Countdown());
+        timerCoroutine = StartCoroutine(Countdown());
     }
 
     private void EndGame()
     {
+        Destroy(instantiatedPlayer.gameObject);
+        Destroy(instantiatedGem.gameObject);
+
         OnGameEnd?.Invoke();
 
         TimeRemaining = 0f;

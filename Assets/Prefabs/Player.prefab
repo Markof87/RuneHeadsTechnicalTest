@@ -109,7 +109,7 @@ MonoBehaviour:
   playerFrontWalk: {fileID: 7400000, guid: 201acbf9e71648d40bdb1fadab8b4d02, type: 2}
   playerBackWalk: {fileID: 7400000, guid: 3208aa3d678dfd54597c8197122d0ba6, type: 2}
   playerSideWalk: {fileID: 7400000, guid: 3e39a0553269f1346b6c85932095772a, type: 2}
-  moveSpeed: 3
+  moveSpeed: 4
 --- !u!50 &6052323170644272100
 Rigidbody2D:
   serializedVersion: 5
@@ -171,17 +171,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.0015617907, y: -0.08746199}
+  m_Offset: {x: -0.0015617907, y: -0.16972402}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.8, y: 0.8}
+    oldSize: {x: 1.6, y: 1.6}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.33466452, y: 0.56893754}
+  m_Size: {x: 0.625001, y: 1.0721877}
   m_EdgeRadius: 0
 --- !u!95 &2567030226286061484
 Animator:

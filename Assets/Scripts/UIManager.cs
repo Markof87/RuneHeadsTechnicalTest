@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
@@ -9,33 +10,33 @@ public class UIManager : MonoBehaviour
     private ScoreData scoreData;
 
     [Header("Components")]
+    [SerializeField]
+    private GameObject FinishGamePanel;
+
     [SerializeField] 
     private TextMeshProUGUI scoreText;
 
     [SerializeField]
     private TextMeshProUGUI timerText;
 
-    [SerializeField] 
-    private TextMeshProUGUI highScoreText;
-
-    [SerializeField]
-    private Button menuButton;
-
     private void OnEnable()
     {
         GameManager.OnTimerUpdated += TimerUpdate;
         GameManager.OnScoreUpdated += ScoreUpdate;
+        GameManager.OnGameEnd += FinishGameDisplay;
     }
 
     private void OnDisable()
     {
         GameManager.OnTimerUpdated -= TimerUpdate;
         GameManager.OnScoreUpdated -= ScoreUpdate;
+        GameManager.OnGameEnd -= FinishGameDisplay;
     }
 
     private void Start()
     {
-        scoreText.text = "0";
+        if(scoreText != null)
+            scoreText.text = "0";
     }
 
     private void TimerUpdate(float time)
@@ -46,5 +47,10 @@ public class UIManager : MonoBehaviour
     private void ScoreUpdate(int score)
     {
         scoreText.text = score.ToString();
+    }
+
+    private void FinishGameDisplay()
+    {
+        FinishGamePanel.SetActive(true);
     }
 }
