@@ -41,7 +41,7 @@ public class Gem : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (isGemActive && collision.CompareTag("Player"));
+        if (isGemActive && collision.CompareTag("Player"))
         {
             OnGemCollected?.Invoke();
             StartCoroutine(SpawnGem());

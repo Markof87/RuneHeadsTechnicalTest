@@ -1,28 +1,24 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
-    [Header("Score Data")]
     [SerializeField] 
     private ScoreData scoreData;
 
-    [Header("Components")]
     [SerializeField]
-    private GameObject FinishGamePanel;
-
+    private GameObject MenuPanel, GamePanel, ResultsPanel, FinishGamePanel, NewRecordText;
     [SerializeField] 
-    private TextMeshProUGUI scoreText;
-
-    [SerializeField]
-    private TextMeshProUGUI timerText;
+    private TextMeshProUGUI scoreText, highScoreText, timerText;
 
     private void OnEnable()
     {
         GameManager.OnTimerUpdated += TimerUpdate;
         GameManager.OnScoreUpdated += ScoreUpdate;
+        GameManager.OnHighScoreUpdated += HighScoreUpdate;
         GameManager.OnGameEnd += FinishGameDisplay;
     }
 
@@ -30,6 +26,7 @@ public class UIManager : MonoBehaviour
     {
         GameManager.OnTimerUpdated -= TimerUpdate;
         GameManager.OnScoreUpdated -= ScoreUpdate;
+        GameManager.OnHighScoreUpdated -= HighScoreUpdate;
         GameManager.OnGameEnd -= FinishGameDisplay;
     }
 
@@ -37,6 +34,17 @@ public class UIManager : MonoBehaviour
     {
         if(scoreText != null)
             scoreText.text = "0";
+
+        ActivatePanels();
+    }
+
+    private void ActivatePanels()
+    {
+        string currentScene = SceneManager.GetActiveScene().name;
+
+        MenuPanel.SetActive(currentScene == "Menu");
+        GamePanel.SetActive(currentScene == "Game");
+        ResultsPanel.SetActive(currentScene == "Results");
     }
 
     private void TimerUpdate(float time)
@@ -44,9 +52,16 @@ public class UIManager : MonoBehaviour
         timerText.text = Mathf.RoundToInt(time).ToString();
     }
 
-    private void ScoreUpdate(int score)
+    private void ScoreUpdate()
     {
-        scoreText.text = score.ToString();
+        scoreText.text = scoreData.currentScore.ToString();
+    }
+
+    private void HighScoreUpdate()
+    {
+        scoreData.LoadHighScore();
+        highScoreText.text = scoreData.currentScore.ToString();
+        NewRecordText.SetActive(scoreData.isRecord);
     }
 
     private void FinishGameDisplay()

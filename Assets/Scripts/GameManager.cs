@@ -8,16 +8,14 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
-    public static event Action OnGameStart;
-    public static event Action OnGameEnd;
+    public static event Action OnGameStart, OnGameEnd, OnScoreUpdated, OnHighScoreUpdated;
     public static event Action<float> OnTimerUpdated;
-    public static event Action<int> OnScoreUpdated;
 
     [SerializeField]
-    private PlayerController player, instantiatedPlayer;
+    private PlayerController player;
 
     [SerializeField]
-    private Gem gem, instantiatedGem;
+    private Gem gem;
 
     [SerializeField]
     private ScoreData scoreData;
@@ -29,6 +27,8 @@ public class GameManager : MonoBehaviour
     public bool IsGameActive { get; private set; }
 
     private Coroutine timerCoroutine, startGameCoroutine;
+    private PlayerController instantiatedPlayer;
+    private Gem instantiatedGem;
 
     private void Awake()
     {
@@ -87,6 +87,8 @@ public class GameManager : MonoBehaviour
 
         if (scene.name == "Game")
             startGameCoroutine = StartCoroutine(StartGame());
+        else if (scene.name == "Results")
+            OnHighScoreUpdated?.Invoke();
         else
             IsGameActive = false;
     }
@@ -94,7 +96,7 @@ public class GameManager : MonoBehaviour
     private void HandleGemCollected()
     {
         scoreData.AddScore(1);
-        OnScoreUpdated?.Invoke(scoreData.currentScore);
+        OnScoreUpdated?.Invoke();
     }
 
     private IEnumerator Countdown()

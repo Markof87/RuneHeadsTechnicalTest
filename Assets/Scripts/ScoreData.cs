@@ -20,17 +20,18 @@ public class ScoreData : ScriptableObject
 
         if(currentScore > highScore)
         {
+            highScore = currentScore;
             SaveHighScore();
             isRecord = true;
         }
     }
 
-    private void LoadHighScore()
+    public void LoadHighScore()
     {
         highScore = PlayerPrefs.GetInt("HighScore", 0);
     }
 
-    private void SaveHighScore()
+    public void SaveHighScore()
     {
         PlayerPrefs.SetInt("HighScore", highScore);
         PlayerPrefs.Save();
