@@ -42,7 +42,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2118146614700072683}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -175,5 +175,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92bff8237f7711046be6dd553438a8d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sizeMap: {x: 10, y: 6}
+  collectSound: {fileID: 8300000, guid: dc6b7d4ac2c0ad24caeb10310dda8ac0, type: 3}
   spawnDelay: 0.5
+  screenMarginPercentage: 0.85
+  minDistanceFromPlayer: 3

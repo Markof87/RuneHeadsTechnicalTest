@@ -1,21 +1,17 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 
+//Class for UI management (activation/deactivation of panels, updating of score and timer on HUD etc...)
 public class UIManager : MonoBehaviour
 {
-    [SerializeField] 
-    private ScoreData scoreData;
-
-    [SerializeField]
-    private GameObject MenuPanel, GamePanel, ResultsPanel, FinishGamePanel, NewRecordText;
-    [SerializeField] 
-    private TextMeshProUGUI scoreText, highScoreText, timerText;
+    [SerializeField] private ScoreData scoreData;
+    [SerializeField] private GameObject MenuPanel, GamePanel, ResultsPanel, FinishGamePanel, NewRecordText;
+    [SerializeField] private TextMeshProUGUI scoreText, highScoreText, timerText;
 
     private void OnEnable()
     {
+        //All the events called by Game Manager about UI changings
         GameManager.OnTimerUpdated += TimerUpdate;
         GameManager.OnScoreUpdated += ScoreUpdate;
         GameManager.OnHighScoreUpdated += HighScoreUpdate;
@@ -38,6 +34,7 @@ public class UIManager : MonoBehaviour
         ActivatePanels();
     }
 
+    //Activate panels based on the current scene
     private void ActivatePanels()
     {
         string currentScene = SceneManager.GetActiveScene().name;
@@ -64,6 +61,7 @@ public class UIManager : MonoBehaviour
         NewRecordText.SetActive(scoreData.isRecord);
     }
 
+    //Activate buttons to reload game or back to main menu when the game is finished
     private void FinishGameDisplay()
     {
         FinishGamePanel.SetActive(true);

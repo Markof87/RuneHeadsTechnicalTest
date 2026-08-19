@@ -110,6 +110,7 @@ MonoBehaviour:
   playerBackWalk: {fileID: 7400000, guid: 3208aa3d678dfd54597c8197122d0ba6, type: 2}
   playerSideWalk: {fileID: 7400000, guid: 3e39a0553269f1346b6c85932095772a, type: 2}
   moveSpeed: 4
+  playerPadding: 0
 --- !u!50 &6052323170644272100
 Rigidbody2D:
   serializedVersion: 5

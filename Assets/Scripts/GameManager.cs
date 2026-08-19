@@ -3,35 +3,28 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-[RequireComponent(typeof(PlayerController))]
-[RequireComponent(typeof(Gem))]
+//The GameManager class, the core of the game loop management
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     public static event Action OnGameStart, OnGameEnd, OnScoreUpdated, OnHighScoreUpdated;
     public static event Action<float> OnTimerUpdated;
 
-    [SerializeField]
-    private PlayerController player;
+    [SerializeField]private GameObject player, gem;
 
-    [SerializeField]
-    private Gem gem;
+    [SerializeField]private ScoreData scoreData;
 
-    [SerializeField]
-    private ScoreData scoreData;
-
-    [SerializeField]
-    private float timer = 30;
+    [SerializeField]private float timer = 30;
 
     public float TimeRemaining { get; private set; }
     public bool IsGameActive { get; private set; }
 
     private Coroutine timerCoroutine, startGameCoroutine;
-    private PlayerController instantiatedPlayer;
-    private Gem instantiatedGem;
+    private GameObject instantiatedPlayer, instantiatedGem;
 
     private void Awake()
     {
+        //Singleton Pattern: it will avoid to create multiple GameManager, or destroy the only one active 
         if(Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -42,6 +35,7 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    //Methods for the buttons
     public void NewGame()
     {
         SceneManager.LoadScene(1);
@@ -57,6 +51,16 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
+    public void ExitGame()
+    {
+        Application.Quit();
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+    }
+    //End of methods for the buttons
+
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -71,14 +75,16 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        Time.timeScale = 1f;
+        Time.timeScale = 1f; //if the game is in pause, this will restore the normal time 
 
+        //We close the previous timer coroutine
         if(timerCoroutine  != null)
         {
             StopCoroutine(timerCoroutine);
             timerCoroutine = null;
         }
 
+        //And the previous game coroutine
         if (startGameCoroutine != null)
         {
             StopCoroutine(startGameCoroutine);
@@ -91,12 +97,6 @@ public class GameManager : MonoBehaviour
             OnHighScoreUpdated?.Invoke();
         else
             IsGameActive = false;
-    }
-
-    private void HandleGemCollected()
-    {
-        scoreData.AddScore(1);
-        OnScoreUpdated?.Invoke();
     }
 
     private IEnumerator Countdown()
@@ -127,6 +127,14 @@ public class GameManager : MonoBehaviour
         timerCoroutine = StartCoroutine(Countdown());
     }
 
+    //Get a point for a collected Gem and invoke an update for UI Manager
+    private void HandleGemCollected()
+    {
+        scoreData.AddScore(1);
+        OnScoreUpdated?.Invoke();
+    }
+
+    //Destroy the Player and the Gem, pause the game and show the two buttons to start a new game o back to menu (with Invoke)
     private void EndGame()
     {
         Destroy(instantiatedPlayer.gameObject);
