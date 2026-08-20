@@ -1,8 +1,6 @@
-# 💎 Mini Arcade 2D - Time Attack Gem Collector
+# 💎 Gem Collector Prototype
 
-Un videogioco 2D arcade sviluppato in Unity. Il giocatore deve raccogliere il maggior numero di gemme possibili in un'arena prima che il timer scada.
-
-Il progetto include un'architettura completa disaccoppiata basata su Eventi C#, gestione dinamica del flusso di gioco tramite `GameManager` persistente, asset grafici in Pixel Art e traccia audio retro 8-bit.
+Un prototipo di videogioco 2D arcade sviluppato in Unity. Il giocatore deve raccogliere il maggior numero di gemme possibili in un'arena prima che il timer scada.
 
 ---
 
@@ -13,70 +11,54 @@ Il progetto include un'architettura completa disaccoppiata basata su Eventi C#, 
    * Viene avviato un timer di **30 secondi**.
    * Il Player si muove liberamente in 8 direzioni (WASD / Frecce) con sprite animati dinamici.
    * Raccogliendo la gemma, il punteggio aumenta di **+1**, viene riprodotto un effetto sonoro dedicato e la gemma si riposiziona in un punto casuale della mappa.
-3. **Pausa:** In qualsiasi momento è possibile mettere in pausa il gioco premendo `ESC` (il tempo e la fisica si congelano).
-4. **Schermata Risultati:** Allo scadere del tempo si carica la scena finale, mostrando il punteggio ottenuto e l'eventuale badge **"New High Score"**.
+3. **Schermata Risultati:** Allo scadere del tempo si può andare alla schermata del risultato, mostrando il punteggio ottenuto e l'eventuale badge **"New Record"** qualora fosse il più alto.
 
 ---
 
 ## 🛠️ Architettura e Soluzioni Tecniche
 
-* **Architecture Event-Driven:** Comunicazione pulita tramite `System.Action` (`OnGameStart`, `OnGameEnd`, `OnGemCollected`) senza accoppiamento rigido tra i componenti.
-* **Persistent Manager (Singleton):** `GameManager` gestisce lo stato di gioco, il tempo, l'instanziazione differita tramite `SceneManager.sceneLoaded` e persiste tra le scene con `DontDestroyOnLoad`.
-* **Zero Animator Controller:** Gestione delle `AnimationClip` direzionali (Walk/Idle per Front, Back e Side) direttamente da codice C# sfruttando le **Playables API** (`AnimationPlayableUtilities.PlayClip`) e `flipX`.
-* **Multi-Canvas UI Layering:**
-  * `BackgroundCanvas` (`Screen Space - Camera`): Sfondo erboso renderizzato sotto il mondo 2D.
-  * `HUDCanvas` (`Screen Space - Overlay`): Interfaccia utente (Score, Timer, Bottoni) sempre renderizzata sopra al Player.
-
----
-
-## 📁 Struttura del Progetto
-
-```text
-Assets/
- ├── Audio/
- │    ├── arcade_bgm_loop.wav     # Musica di sottofondo 8-bit (120 BPM)
- │    └── gem_collect.wav         # Effetto sonoro al pick-up della gemma
- ├── Animations/                  # AnimationClips per Walk/Idle (Front, Back, Side)
- ├── Prefabs/
- │    ├── [GameManager].prefab    # Controller persistente tra scene
- │    ├── Player.prefab           # Personaggio giocabile 8-bit
- │    └── Gem.prefab              # Gemma collezionabile
- ├── Scenes/
- │    ├── MenuScene.unity         # Menu iniziale e High Score
- │    ├── GameScene.unity         # Arena di gioco
- │    └── ResultsScene.unity      # Schermata finale di riepilogo
- ├── Scripts/
- │    ├── GameManager.cs          # Gestore dello stato di gioco, scene e timer
- │    ├── PlayerController.cs     # Input System, movimento 2D e Playables Animation
- │    ├── Gem.cs                  # Trigger collisioni, coroutine di respawn ed eventi
- │    └── GameUIManager.cs        # Controllo UI, Pausa (Time.timeScale) e Canvas
- └── Sprites/
-      ├── player_spritesheet.png  # Sprite Sheet 32x32 8-bit (Pixel Art)
-      └── smooth_grass_bg.png     # Sfondo mappa fluido senza griglia (1920x1080)
-```
+* **Architecture Event-Driven (Observer):** Comunicazione pulita tramite `System.Action` senza accoppiamento rigido tra i componenti.
+* **Persistent Manager (Singleton):** `GameManager` gestisce lo stato di gioco, il tempo, e persiste tra le scene con il pattern Singleton (`DontDestroyOnLoad`).
+* **ScoreData (ScriptableObject):** ScriptableObject contenente l'ultimo risultato, il più alto ed un flag `isRecord` per verificare che sia un nuovo record.
+* **Build  (WebGL):** Build del gioco caricata su pagina web usando le librerie WebGL.
 
 ---
 
 ## ⚙️ Requisiti e Setup
 
 ### Requisiti di Sistema
-* **Unity Version:** 2022.3 LTS o successiva (compatibile anche con Unity 2023 / 6).
-* **Render Pipeline:** 2D / Universal Render Pipeline (URP) o Built-in 2D.
-* **Packages:** `Input System` (nuovo o legacy Keyboard), `TextMeshPro`.
+* **Unity Version:** 6000.0.62f1 o successiva (compatibile anche con versioni precedenti).
+* **Packages:** `New Input System` per il controllo del Player, `TextMeshPro` per la resa grafica delle stringhe di testo.
 
 ### Istruzioni per la Configurazione
 1. Clona il repository:
    ```bash
-   git clone https://github.com/tuo-username/mini-arcade-2d.git
+   git clone https://github.com/Markof87/RuneHeadsTechnicalTest.git
    ```
 2. Apri il progetto con **Unity Hub**.
 3. Assicurati che le scene siano aggiunte in **Build Settings** (`File -> Build Settings`):
-   * `Index 0:` `Assets/Scenes/MenuScene.unity`
-   * `Index 1:` `Assets/Scenes/GameScene.unity`
-   * `Index 2:` `Assets/Scenes/ResultsScene.unity`
-4. Apri la scena `MenuScene` e premi **Play**.
+   * `Index 0:` `Assets/Scenes/Menu.unity`
+   * `Index 1:` `Assets/Scenes/Game.unity`
+   * `Index 2:` `Assets/Scenes/Results.unity`
+4. Apri la scena `Menu` e premi **Play**.
+
+### Assets del gioco
+
+Le sprites del Player e del Gem provengono da pack di assets acquistati a titolo personale.
+Il font utilizzato per le stringhe (Fredoka) è stato prelevato dalle librerie di Google Fonts.
+I file audio e l'immagine di backgroud sono generati da intelligenza artificiale (Gemini).
+N.B: in questo progetto l'intelligenza artificiale è stata utilizzata anche per generare file più "verbosi" (`.gitignore`, la prima versione del `README.md`...), ma nella scrittura del codice sono state utilizzate solo alcune funzionalità di Github Copilot per una maggiore velocità di scrittura.
+Nessun "vibe coding" per gli script.
+
+### Build e link del gioco
+
+* **Test del gioco (itch.io):**
 
 https://markof87.itch.io/runeheadstechnicaltest
+
+* **Archivio della build (esportabile su altre piattaforme):**
+
+https://github.com/Markof87/RuneHeadsTechnicalTest/blob/main/Build.zip
 
 ---
 
@@ -85,8 +67,19 @@ https://markof87.itch.io/runeheadstechnicaltest
 | Tasto | Azione |
 | :--- | :--- |
 | **W A S D** / **Frecce Direzionali** | Movimento del Player |
-| **ESC** | Pausa / Ripristino Gioco |
 | **Mouse Left Click** | Interazione con Bottoni UI |
 
 ---
+
 ## 📝 Postmortem & Key Learnings
+
+### Scelte rivedibili e possibili estensioni
+
+* Con lo sviluppo del gioco, la scelta dello `ScriptableObject` per il salvataggio del punteggio è apparsa un po' ridondante. Tuttavia, per un'eventuale estensione del prototipo, si può utilizzare questo strumento per estendere le meccaniche di game design (power-up, weapons ecc...)
+* Fin dall'inizio si è scelto di far apparire una gemma alla volta nell'area di gioco per semplificare alcune meccaniche. Si poteva estendere la frequenza di spawn su un numero impostabile da Inspector.
+* Il game loop di base è piuttosto scarno, ma con diverse giornate di sviluppo si può creare un set di gemme dalle diverse proprietà (estensione del timer, power-up...), ostacoli e nemici (semplici o anche boss) che possono far terminare il gioco anticipatamente con la morte del Player, ed anche diversi "character" (ognuno con le proprie caratteristiche) sbloccabili con determinati traguardi, oltre a diverse mappe e livelli bonus.
+
+### Key Learnings
+
+Oltre alla pura finalità del prototipo, lo sviluppo di un progetto semplice, ma con diverse scelte di game design lasciate volutamente libere, è stato particolarmente utile per cercare soluzioni efficaci ma allo stesso tempo contenute nelle ore di sviluppo.
+Anche se non richieste, l'utilizzo di asset grafici e qualche funzionalità più avanzata di Unity (audio, animations...) mi ha permesso di rivedere e di risolvere alcune problematiche spesso sottovalutate.

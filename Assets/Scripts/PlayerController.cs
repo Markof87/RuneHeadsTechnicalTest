@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Playables;
-using UnityEngine.SocialPlatforms;
 
 //Player Controller class
 public class PlayerController : MonoBehaviour
